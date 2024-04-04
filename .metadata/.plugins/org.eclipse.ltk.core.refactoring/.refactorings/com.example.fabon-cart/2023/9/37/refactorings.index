@@ -1,0 +1,21 @@
+1694756618979	Rename package 'com.example.fabonuser.controller'
+1694756637851	Rename package 'com.example.FabonCartService'
+1694756653965	Delete element
+1694756682314	Rename type 'UserProductController'
+1694756753421	Rename package 'com.example.fabonuser.dao'
+1694756776397	Rename type 'FabonUsersDao'
+1694756812425	Rename package 'com.example.fabonuser.dto'
+1694758813096	Rename type 'FabonUserProduct'
+1694758841197	Delete element
+1694758903585	Rename package 'com.example.fabonuser.service'
+1694758919282	Rename type 'FabonUserService'
+1694758991662	Delete element
+1694761606227	Copy compilation unit
+1694761820825	Copy compilation unit
+1694761887893	Copy compilation unit
+1694769955668	Rename package 'com.example.FabonCartService'
+1694770524435	Rename type 'FabonCartServiceApplication'
+1694770538238	Rename type 'FabonCartServiceApplicationTests'
+1694770918191	Delete element
+1694770964459	Delete element
+1694770968407	Delete element

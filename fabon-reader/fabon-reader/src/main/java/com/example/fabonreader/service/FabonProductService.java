@@ -1,0 +1,198 @@
+package com.example.fabonreader.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.fabonreader.dao.FabonProductCategoryDao;
+import com.example.fabonreader.dao.FabonProductDivisionDao;
+import com.example.fabonreader.dao.FabonUserCartDetailDao;
+import com.example.fabonreader.dao.FabonUserProductDao;
+import com.example.fabonreader.dao.FabonUsersDao;
+import com.example.fabonreader.dto.FabonProductCategory;
+import com.example.fabonreader.dto.FabonProductDivision;
+import com.example.fabonreader.dto.FabonProducts;
+import com.example.fabonreader.dto.FabonUserCartDetails;
+import com.example.fabonreader.dto.FabonUserOrderDetails;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.Query;
+
+import com.example.fabonuser.util.FabonUserReaderUtil;
+
+@Service
+public class FabonProductService {
+	
+	@Autowired
+	FabonUsersDao dao;
+	
+	@Autowired
+	FabonProductCategoryDao categoryDao;
+	
+	@Autowired
+	FabonUserProductDao productDao;
+	
+	@Autowired
+	FabonProductDivisionDao divisionDao;
+	
+	@Autowired
+	FabonUserCartDetailDao userCartDao;
+	
+	@Autowired
+    private MongoTemplate mongoTemplate;
+	
+
+	public List<FabonProductCategory> getAllProductsCategories() {
+		List<FabonProductCategory> categoryList = categoryDao.findAll();		
+		return categoryList;
+	}
+
+	public FabonProducts getProductDetailsByProductId(String productId) {
+		Optional<FabonProducts> productDetail = productDao.findByProductId(productId);
+		
+		if(productDetail.isPresent()) {
+			return productDetail.get();
+		}		
+		return null;
+	}
+
+	public List<FabonProductDivision> getAllDivisionOfCategory(String categoryId) {
+		List<FabonProductDivision> divisionList = divisionDao.findByCategoryId(categoryId);		
+		return divisionList;
+	}
+
+	public List<FabonProducts> getAllProductsOfDivision(String divisionId) {
+		
+		List<FabonProducts> productsOfDivision = productDao.findByDivisionId(divisionId);		
+				
+		return productsOfDivision;
+	}
+
+	public List<FabonProducts> getCartProducts(String emailId) {
+		
+		List<FabonProducts> userProductDetails = new ArrayList<>();
+		
+		FabonUserCartDetails cartDetails = userCartDao.findByEmailId(emailId);
+		List<String> cartProductIds = cartDetails.getCartProductIds();
+		
+		for(String productId : cartProductIds) {
+			//String productId = product.split("*")[0];
+			if(null != getProductDetailsByProductId(productId)) {
+				userProductDetails.add(getProductDetailsByProductId(productId));
+			}			
+		}
+		
+		return userProductDetails;
+	}
+
+	/**
+	 * this will provide the order details if order is placed
+	 * @param emailId
+	 * @return
+	 * @throws Exception 
+	 */
+	public FabonUserOrderDetails getUserOrderedProducts(String emailId) {
+		FabonUserCartDetails cartDetails = userCartDao.findByEmailIdAndOrderPlaced(emailId);
+		if(null != cartDetails && cartDetails.isOrderPlaced()) {
+			
+			FabonUserOrderDetails orderDetail = new FabonUserOrderDetails();
+			
+			for(String productId : cartDetails.getCartProductIds()) {
+				//String productId = product.split("*")[0];
+				if(null != getProductDetailsByProductId(productId)) {
+					List<FabonProducts> productDetails = new ArrayList<>();
+					productDetails.add(getProductDetailsByProductId(productId));
+					orderDetail.setOrderedProducts(productDetails);
+				}			
+			}	
+			UUID orderId = FabonUserReaderUtil.generateFabonOrderId();
+			cartDetails.setOrderId(String.valueOf(orderId));
+			//save order id
+			updateOrderIdbyEmailId(String.valueOf(orderId), emailId);			
+			orderDetail.setOrderId(String.valueOf(orderId));
+			
+			//get total amount payable for the order id
+			double totalAmount = getTotalAmountPayableForOrderId(emailId);
+			
+			orderDetail.setTotalAmountPayable(String.valueOf(totalAmount));
+			
+			return orderDetail;
+		}
+		else {
+			System.out.println();
+		}
+		return null;
+	}
+	
+	private double getTotalAmountPayableForOrderId(String emailId) {
+		//FabonUserCartDetails cartDetails = userCartDao.calculateTotalAmountPayableByEmailId(emailId);
+		FabonUserCartDetails cartDetails = calculateTotalAmountPayableByEmailId(emailId);
+		System.out.println("cartDetails: "+ cartDetails.toString());
+		return cartDetails.getTotalAmountPayable();
+	}
+
+	public void updateCartProductIdsByEmailId(String emailId, List<String> cartProductIds) {
+        Query query = new Query(Criteria.where("emailId").is(emailId));
+        Update update = new Update().set("cartProductIds", cartProductIds);
+        mongoTemplate.updateMulti(query, update, FabonUserCartDetails.class);
+    }
+
+	public void updateOrderPlacedByEmailId(String emailId, boolean orderPlaced) {
+		Query query = new Query(Criteria.where("emailId").is(emailId));
+        Update update = new Update().set("orderPlaced", orderPlaced);
+        mongoTemplate.updateMulti(query, update, FabonUserCartDetails.class);
+	}
+	
+	public void updateOrderIdbyEmailId(String orderId, String emailId) {
+		Query query = new Query(Criteria.where("emailId").is(emailId));
+        Update update = new Update().set("orderId", orderId);
+        mongoTemplate.updateMulti(query, update, FabonUserCartDetails.class);
+	}
+	
+	public FabonUserCartDetails calculateTotalAmountPayableByEmailId(String emailId) {        
+
+        Aggregation aggregation = Aggregation.newAggregation(
+        		Aggregation.match(Criteria.where("emailId").is(emailId)),
+        		Aggregation.unwind("$cartProductIds"),
+        		Aggregation.lookup("Products", "cartProductIds", "productId", "ProductDetail"),
+        		Aggregation.unwind("$ProductDetail"),
+        		Aggregation.group()
+                .first("emailId").as("emailId")
+                .push("cartProductIds").as("cartProductIds")
+                .first("orderPlaced").as("orderPlaced")
+                .first("proceedPayment").as("proceedPayment")
+                .first("orderId").as("orderId")
+                .sum(ConditionalOperators.ifNull("$ProductDetail.productPrice").then(0)).as("totalAmountPayable"),
+                Aggregation.project()
+                .andExclude("_id")
+        );
+
+        AggregationResults<FabonUserCartDetails> result = mongoTemplate.aggregate(
+            aggregation,
+            "FabonUserCartDetails",
+            FabonUserCartDetails.class
+        );
+        
+        updateTotalAmountPayableByEmailId(result.getUniqueMappedResult());
+
+        return result.getUniqueMappedResult();
+    }
+	
+	public void updateTotalAmountPayableByEmailId(FabonUserCartDetails cartDetails) {
+        Query query = new Query(Criteria.where("emailId").is(cartDetails.getEmailId()));
+        System.out.println("totalAmountPayable: " + cartDetails.getTotalAmountPayable());
+        Update update = new Update().set("totalAmountPayable", cartDetails.getTotalAmountPayable());
+        mongoTemplate.updateMulti(query, update, FabonUserCartDetails.class);
+    }
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;RedisConfig.java&apos; to &apos;com.example.fabon-wishlist/src/main/java/com.example.fabonwishlist.config&apos;&#x0D;&#x0A;- Original project: &apos;com.example.fabon-reader&apos;&#x0D;&#x0A;- Destination element: &apos;com.example.fabon-wishlist/src/main/java/com.example.fabonwishlist.config&apos;&#x0D;&#x0A;- Original element: &apos;com.example.fabonreader.config.RedisConfig.java&apos;" description="Copy compilation unit" destination="=com.example.fabon-wishlist/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.fabonwishlist.config" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.fabonreader.config{RedisConfig.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1695820647703" units="1" version="1.0"/>
+</session>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;KafkaConfig.java&apos; to &apos;com.example.fabon-payment/src/main/java/com.example.fabonpayment.config&apos;&#x0D;&#x0A;- Original project: &apos;com.example.fabon-user&apos;&#x0D;&#x0A;- Destination element: &apos;com.example.fabon-payment/src/main/java/com.example.fabonpayment.config&apos;&#x0D;&#x0A;- Original element: &apos;com.example.fabonuser.config.KafkaConfig.java&apos;" description="Copy compilation unit" destination="=com.example.fabon-payment/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.fabonpayment.config" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.fabonuser.config{KafkaConfig.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1696479024726" units="1" version="1.0"/>
+</session>

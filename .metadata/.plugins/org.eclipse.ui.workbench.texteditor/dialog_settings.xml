@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="selection" value="getProductDetails"/>
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<list key="findhistory">
+			<item value="getProductDetails"/>
+			<item value="spring-cloud-starter-gateway"/>
+			<item value="spring-boot-starter-web"/>
+			<item value="prd1"/>
+			<item value="USER-TOPIC"/>
+			<item value="userPrdListener"/>
+			<item value="reading kafka message of PRODUCT-DETAIL - message:"/>
+			<item value="reading kafka message of CATEGORY-DETAIL - message:"/>
+			<item value="# in products:"/>
+			<item value="Fabon Product Service Bean initialized"/>
+			<item value="findByProductId"/>
+			<item value="spring-boot.version"/>
+			<item value="version:"/>
+		</list>
+		<list key="replacehistory">
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="1297"/>
+		<item key="DIALOG_Y_ORIGIN" value="390"/>
+		<item key="DIALOG_WIDTH" value="511"/>
+		<item key="DIALOG_HEIGHT" value="523"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+	</section>
+</section>

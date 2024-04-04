@@ -1,0 +1,47 @@
+package com.example.fabonpayment.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.fabonpayment.dao.FabonPaymentDao;
+import com.example.fabonpayment.dto.OrderBasePaymentData;
+
+@Service
+public class FabonPaymentService {
+	
+	@Autowired
+	FabonPaymentDao paymentDao;
+
+	public boolean validatePayment(OrderBasePaymentData paymentDetail) {
+		if(null == paymentDetail.getOrderId()) {
+			return false;
+		}
+		
+		if(null == paymentDetail.getPaymentMode()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void savePaymentDetails(OrderBasePaymentData paymentDetail) {
+		paymentDao.save(paymentDetail);
+	}
+
+	public void updatePaymentDetails(OrderBasePaymentData paymentDetail) {
+		OrderBasePaymentData existingPaymentDetail = paymentDao.findByPaymentId(paymentDetail.getPaymentId());
+		if (null != existingPaymentDetail) {	
+			OrderBasePaymentData orderBasePaymentData = new OrderBasePaymentData.Builder()
+				    .orderId(paymentDetail.getOrderId())
+				    .paymentId(paymentDetail.getPaymentId())
+				    .paymentMode(paymentDetail.getPaymentMode())
+				    .paymentStatus(paymentDetail.getPaymentStatus())
+				    .upiData(paymentDetail.getUpiData())
+				    .cartData(paymentDetail.getCartData())
+				    .transactionId(paymentDetail.getTransactionId())
+				    .id(existingPaymentDetail.getId())
+				    .build();
+			existingPaymentDetail = orderBasePaymentData;
+		}
+	}
+}

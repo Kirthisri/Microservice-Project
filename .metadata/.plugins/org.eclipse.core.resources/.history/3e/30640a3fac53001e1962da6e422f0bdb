@@ -1,0 +1,32 @@
+package com.example.faboncart.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.faboncart.dao.FabonCartDao;
+import com.example.faboncart.dto.FabonUserCart;
+import com.example.faboncart.dto.FabonUserWishlist;
+
+@Service
+public class FabonCartService {
+	
+	public static final Logger log = LoggerFactory.getLogger(FabonCartService.class);
+	
+	@Autowired
+	FabonCartDao fabonCartDao;
+
+	public void saveUserProductInCart(FabonUserCart userCartDetail) {
+		fabonCartDao.save(userCartDetail);
+	}
+
+	public void deleteUserProductInCart(FabonUserCart userCartDetail) {
+		fabonCartDao.deleteByEmailAndProductId(userCartDetail.getEmailId(), userCartDetail.getCartProductId());
+	}
+	
+	public void updateOrderPlaceStatus(FabonUserCart userCartDetail) {
+		fabonCartDao.updateOrderPlacedByEmailId(userCartDetail.getEmailId(), userCartDetail.isOrderPlaced());
+	}
+
+}

@@ -1,0 +1,56 @@
+package com.example.fabonuser.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.fabonuser.clients.UserProductClient;
+import com.example.fabonuser.dto.FabonProducts;
+import com.example.fabonuser.dto.FabonUserProduct;
+import com.example.fabonuser.service.FabonUserService;
+
+@RestController
+@RequestMapping("/userProducts")
+public class UserProductController {
+
+	public static final Logger log = LoggerFactory.getLogger(UserProductController.class);
+	
+	@Autowired
+	@Qualifier("userProoductClient")
+	UserProductClient userProductClient;
+	
+	@Autowired
+	FabonUserService fabonUserService;
+	
+	@GetMapping(value="/cartDetails")
+	public List<FabonProducts> getUserCartProducts(@RequestBody FabonUserProduct userProducts) {
+		
+		List<FabonProducts> userProductDetails = new ArrayList<>();
+		
+		userProducts.getCartProductIds().forEach(productId -> {
+			userProductDetails.add(userProductClient.getProductDetailsById(productId));			
+		});
+		
+		return userProductDetails;		
+	}
+	
+	@GetMapping(value="/wishListDetails")
+	public List<FabonProducts> getUserWishlistProducts(@RequestBody FabonUserProduct userProducts) {
+		
+		List<FabonProducts> userProductDetails = new ArrayList<>();
+		
+		userProducts.getWishlistProductIds().forEach(productId -> {
+			userProductDetails.add(userProductClient.getProductDetailsById(productId));			
+		});
+		
+		return userProductDetails;		
+	}
+}

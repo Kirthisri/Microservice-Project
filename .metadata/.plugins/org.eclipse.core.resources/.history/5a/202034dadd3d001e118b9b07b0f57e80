@@ -1,0 +1,49 @@
+package com.example.fabonreader.kafka.listener;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
+
+import com.example.fabonreader.dao.FabonUsersDao;
+import com.example.fabonreader.dto.FabonUsers;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
+import jakarta.transaction.Transactional;
+
+@Component
+public class FabonUserListener {
+	
+	public static final Logger log = LoggerFactory.getLogger(FabonUserListener.class);
+	
+	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	FabonUsersDao userDao;
+	
+	@org.springframework.transaction.annotation.Transactional
+	@KafkaListener(topics="USER-TOPIC", groupId="group_id")
+	//public void userCartDetailMessage(@Payload String event, @Payload String userProducts) throws JsonProcessingException {
+	public void userCartDetailMessage(ConsumerRecord<String, String> userProducts) throws JsonProcessingException {	
+		System.out.println("reading kafka message of USER-TOPIC - message: " + userProducts);
+		//FabonUsers userDetails = mapper.readValue(userProducts, FabonUsers.class);
+		Gson gson = new Gson();
+        FabonUsers userDetails = gson.fromJson(userProducts.value(), FabonUsers.class);
+
+		System.out.println("reading kafka message of USER-TOPIC - message: " + userProducts);
+
+		try {
+		userDao.save(userDetails);
+		}
+		catch(Exception e) {
+			log.error("Exception: " + e);
+		}
+	}
+}
