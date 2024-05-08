@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.example.faboncart.cache.UserProductClientCache;
@@ -16,7 +15,7 @@ import com.example.faboncart.dao.FabonCartDao;
 import com.example.faboncart.dto.FabonOrderProduct;
 import com.example.faboncart.dto.FabonProduct;
 import com.example.faboncart.dto.FabonUserCart;
-import com.example.faboncart.dto.FabonUserCartForRedis;
+//import com.example.faboncart.dto.FabonUserCartForRedis;
 import com.example.faboncart.dto.FallbackAttribute;
 import com.example.faboncart.redis.dao.UserCartRedDao;
 import com.example.faboncart.redis.dao.UserProductRedDao;
@@ -62,6 +61,7 @@ public class FabonCartService {
 		return fabonCartDao.findByCartId(cartId);
 	}
 
+	//@CircuitBreaker(name = "productServiceCB", fallbackMethod = "fallbackForPrd")
 	public List<FabonOrderProduct> getOrderDetailsOfCart(List<FabonUserCart> cartDetails) {
 
 		List<FabonOrderProduct> orderData = new ArrayList<>();
@@ -70,17 +70,21 @@ public class FabonCartService {
 			FabonOrderProduct orderDet = new FabonOrderProduct();
 			orderDet.setProductId(cartDetail.getCartProductId());
 			orderDet.setQuantity(cartDetail.getQuantity());
+			orderDet.setOrderId(cartDetail.getOrderId());
+			orderDet.setOrderPlaced(cartDetail.isOrderPlaced());
 
 			FabonProduct fabonProducts = getClientProductDetailsById(cartDetail.getCartProductId());
 			//FabonProduct fabonProducts = userProductClient.getProductDetailsById(cartDetail.getCartProductId());
+			System.out.println("ProductDetail: "+ fabonProducts.toString());
 			orderDet.setProductDetail(fabonProducts);
+			System.out.println("ProductDetail in order: "+ orderDet.getProductDetail().toString());
 			orderData.add(orderDet);
 
 		});
 
 		return orderData;
 	}
-	
+		
 	
     public FabonProduct getClientProductDetailsById(String productId) {
 		FabonProduct prdDetailFromClient = userProductClient.getProductDetailsById(productId);
@@ -111,6 +115,7 @@ public class FabonCartService {
 
 			FabonProduct fabonProducts = userProductClientCache.callCachedProductDetailsById(cartDetail.getCartProductId());
 			orderDet.setProductDetail(fabonProducts);
+			System.out.println("ProductDetail from cache: "+fabonProducts.toString());
 
 			FallbackAttribute fallBackData = new FallbackAttribute("Product data from cache", "900"); 
 			//FabonOrderProduct returnData = new FabonOrderProduct.Builder().fallbackAttribute(fallBackData).build();
@@ -123,17 +128,22 @@ public class FabonCartService {
 		return orderData;
 	}
 
-	public void updateCartData(FabonUserCart userCartDetail) {
-		//UUID orderId = FabonCartUtil.generateFabonOrderId();
-		//userCartDetail.setOrderId(orderId.toString());
+	public List<FabonUserCart> updateCartData(String cartId) {
+		UUID orderId = FabonCartUtil.generateFabonOrderId();		
+		String orderIdStr = "fabon-"+orderId.toString();
 		
-//		if(null != fabonCartDao.findByCartId(userCartDetail.getCartId())) {
-//			List<FabonUserCart> cartList = fabonCartDao.findByCartId(userCartDetail.getCartId());
-//			cartList.forEach(data -> {
-//				data.set
-//			});
-//		}
-		fabonCartDao.updateQuantityByCartId(userCartDetail.getQuantity(), userCartDetail.getCartId());
+		List<FabonUserCart> cartList = null;
+		
+		if(null != fabonCartDao.findByCartId(cartId)) {
+			cartList = fabonCartDao.findByCartId(cartId);
+			cartList.forEach(cartData -> {
+				cartData.setOrderId(orderIdStr);
+				cartData.setOrderPlaced(true);
+				fabonCartDao.save(cartData);
+			});
+		}
+		//fabonCartDao.updateQuantityByCartId(userCartDetail.getQuantity(), userCartDetail.getCartId());
+		return cartList;
 	}
 
 }

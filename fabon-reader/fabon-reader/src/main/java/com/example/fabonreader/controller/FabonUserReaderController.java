@@ -64,7 +64,7 @@ public class FabonUserReaderController {
 		}
 	}
 
-	
+
 	@GetMapping(value="/getUserDetail/{userId}")
 	public FabonUsers fetchUserData(@PathVariable Long userId) throws FabonReaderExceptions {	
 		Optional<FabonUsers> userDet = fabonUserService.getUserDetailsById(userId);

@@ -1,0 +1,31 @@
+﻿productId,productName,productPrice,productCost,productSalePrice,productDiscount,productUnits,productCategoryId,productCategoryName,productDivisionId,productDivisionName
+1,Apple iPhone 13,1000,800,950,5%,100,101,Technology,1,Electronics
+12,Apple Watch Series 7,400,300,350,8%,100,101,Technology,1,Electronics
+22,Fitbit Charge 5 Fitness Tracker,150,100,130,13%,85,101,Technology,1,Electronics
+27,Apple AirPods Pro,250,180,220,12%,80,101,Technology,1,Electronics
+2,Samsung 4K Smart TV,1200,900,1100,8%,120,101,Technology,1,Electronics
+13,Samsung Galaxy Tab S7,600,450,550,9%,70,101,Technology,1,Electronics
+23,Google Pixel 6 Pro,900,700,850,5%,75,101,Technology,1,Electronics
+28,Samsung QLED 4K TV,1500,1100,1350,10%,65,101,Technology,1,Electronics
+4,Sony PlayStation 5,500,400,450,10%,80,101,Technology,1,Electronics
+5,Apple MacBook Pro,2000,1600,1900,5%,110,101,Technology,1,Electronics
+6,Sony Noise Cancelling Headphones,300,200,250,17%,95,101,Technology,1,Electronics
+15,Bose QuietComfort Earbuds,250,180,220,12%,80,101,Technology,1,Electronics
+25,Bose SoundLink Color Bluetooth Speaker,120,80,100,17%,95,101,Technology,1,Electronics
+30,Sony WH-1000XM4 Wireless Headphones,300,220,250,17%,75,101,Technology,1,Electronics
+8,Amazon Echo Dot (4th Gen),50,30,40,20%,85,101,Technology,1,Electronics
+18,Amazon Kindle Paperwhite,130,100,120,8%,95,101,Technology,1,Electronics
+9,Canon EOS Rebel T7i,800,600,750,6%,75,101,Technology,3,Cameras
+19,Nikon D7500 DSLR Camera,1000,800,950,5%,70,101,Technology,3,Cameras
+3,Nike Air Zoom Pegasus,150,100,130,13%,90,102,Fashion,2,Shoes
+14,Nike Air Jordan 1 Retro,200,150,180,10%,120,102,Fashion,2,Shoes
+7,Adidas Ultraboost Shoes,180,120,150,10%,105,102,Fashion,2,Shoes
+17,Adidas Originals Superstar Shoes,90,60,80,11%,110,102,Fashion,2,Shoes
+24,Converse Chuck Taylor All Star,60,40,50,17%,115,102,Fashion,2,Shoes
+29,New Balance Fresh Foam 1080v11,140,100,120,14%,100,102,Fashion,2,Shoes
+10,Lululemon Align Leggings,100,70,90,10%,115,102,Fashion,4,Apparel
+20,Lululemon Define Jacket,120,80,100,17%,105,102,Fashion,4,Apparel
+11,PlayStation 5 Games Bundle,80,50,70,12%,95,103,Entertainment,5,Video Games
+21,Microsoft Xbox Series X,500,400,450,10%,90,103,Entertainment,5,Video Games
+26,FIFA 22 - PlayStation 5,60,40,50,17%,90,103,Entertainment,5,Video Games
+16,Lego Star Wars Millennium Falcon,800,600,750,6%,60,103,Entertainment,6,Toys

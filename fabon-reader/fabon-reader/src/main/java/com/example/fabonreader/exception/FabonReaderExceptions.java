@@ -2,7 +2,7 @@ package com.example.fabonreader.exception;
 
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class FabonReaderExceptions extends RuntimeException{
 
 	/**

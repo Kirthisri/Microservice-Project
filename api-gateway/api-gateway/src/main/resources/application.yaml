@@ -26,4 +26,8 @@ spring:
           uri: lb://fabon-reader
           predicates:
             - Path=/fabonUser/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/userPayment/**
 

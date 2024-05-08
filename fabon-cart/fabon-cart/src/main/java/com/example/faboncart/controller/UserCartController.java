@@ -1,14 +1,10 @@
 package com.example.faboncart.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,15 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.faboncart.dto.FabonOrderProduct;
-import com.example.faboncart.dto.FabonProduct;
 import com.example.faboncart.dto.FabonUserCart;
-import com.example.faboncart.dto.FallbackAttribute;
 import com.example.faboncart.service.FabonCartService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 
 @RestController
 @RequestMapping("/userCart")
@@ -70,7 +63,7 @@ public class UserCartController {
 		return userCartDetail;
 	}
 	
-	@CacheEvict(key = "#cartId"+'-'+"cartProductId", value = "FabonUserCart")
+	@CacheEvict(key = "#cartId + '-' + #cartProductId", value = "FabonUserCart")
 	@DeleteMapping(value = "/deleteCartProducts")
 	public FabonUserCart updateCartProducts(@RequestBody FabonUserCart userCartDetail) {
 		// converting the request object to string
@@ -89,33 +82,34 @@ public class UserCartController {
 		return userCartDetail;
 	}
 	
-	@CachePut(key = "#cartId"+'-'+"cartProductId", value = "FabonUserCart")
-	@PutMapping(value = "/updateCart")
-	public FabonUserCart placeOrder(@RequestBody FabonUserCart userProducts) {
-		// converting the request object to string
-//		String jsonUserProds = "";
-//		try {
-//			jsonUserProds = mapper.writeValueAsString(userProducts);
-//		} catch (JsonProcessingException e) {
-//			// Handle serialization error
-//			log.error("UserProductController: API - /placeOrder  Error: " + e);
-//		}
-//		kafkaTemp.send("USER-CART-DETAIL", "orderPlace", jsonUserProds);
-				
+	
+	@CachePut(key = "#cartId + '-' + #cartProductId", value = "FabonUserCart")
+	@PutMapping(value = "/placeOrder")
+	public List<FabonUserCart> placeOrder(@RequestParam String cartId) {
+			
 		//update order place status
-		fabonCartService.updateCartData(userProducts);
+		List<FabonUserCart> cartList=fabonCartService.updateCartData(cartId);
 		
+		cartList.forEach(data -> {
+			String jsonUserProds = "";
+			try {
+				jsonUserProds = mapper.writeValueAsString(data);
+			} catch (JsonProcessingException e) {
+				// Handle serialization error
+				log.error("UserProductController: API - /placeOrder  Error: " + e);
+			}
+			kafkaTemp.send("USER-CART-DETAIL", "orderPlace", jsonUserProds);
+		});
 		
-		return userProducts;
+		return cartList;
 	}
 	
 	@GetMapping(value="/getCartOfUser")
-	@Cacheable(key = "#cartId"+'-'+"cartProductId", value = "FabonUserCart")
+	@Cacheable(key = "#cartId + '-' + #cartProductId", value = "FabonUserCart")
 	//@Retry(name = "productServiceCB")
-	public FabonUserCart getCartData(@RequestParam("cartId") String cartId,
-			@RequestParam("cartProductId") String cartProductId) {
+	public List<FabonUserCart> getCartData(@RequestParam("cartId") String cartId) {
 		
-		FabonUserCart cartDetails = fabonCartService.getCartDetailsByCartId(cartId, cartProductId);
+		List<FabonUserCart> cartDetails = fabonCartService.getCartDetailsByCartId(cartId);
 		//System.out.println("getProductDetails() - # in cartDetails: " + cartDetails.size());
 		
 		return cartDetails;
@@ -145,5 +139,5 @@ public class UserCartController {
 		
 		//List<FabonOrderProduct> fallbackForPrdata = Stream.of(returnData).collect(Collectors.toList());
 	}
-	
+		
 }

@@ -58,7 +58,7 @@ public class FabonProductController {
 	}
 	
 	//At 01:00 on every 2nd day-of-week
-	@Scheduled(cron="0 1 * * */2")
+	//@Scheduled(cron="0 1 * * */2")
 	@GetMapping(value = "/loadAllProducts")
 	public String runProductBatchJob() {
 		try {

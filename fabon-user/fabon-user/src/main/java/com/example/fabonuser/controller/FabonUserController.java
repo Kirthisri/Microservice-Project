@@ -4,15 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.fabonuser.dto.FabonUsers;
 import com.example.fabonuser.exception.FabonUserExceptions;
+import com.example.fabonuser.service.EmailService;
 import com.example.fabonuser.service.FabonUserService;
 import com.example.fabonuser.util.ExceptionConstants;
 import com.example.fabonuser.util.FabonUserStatusEnums;
@@ -27,6 +28,9 @@ public class FabonUserController {
 	
 	@Autowired
 	FabonUserService fabonUserService;	
+	
+	@Autowired
+	EmailService emailService;
 	
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemp;
@@ -55,25 +59,33 @@ public class FabonUserController {
 	}
 	
 	@PostMapping(value="/forgotPassword")
-	public String sendEmailForPwdChange(@RequestBody FabonUsers users) {
-		if(null != users.getEmailId()) {
+	public String sendEmailForPwdChange(@RequestParam String toEmail) {
+		
+		if (null != toEmail) {
 			log.info("in FabonUserController layer - /user/forgotPassword - sending email to the user for pwd change");
+
+			emailService.sendPasswordChangeMessage(toEmail);
+			
 			return "Email sent to user";
-		}
-		else {
+		} else {
 			log.info("Provide Registered email Id");
 			return "Provide Registered email Id";
 		}
-		
+
 	}
 	
-	@PutMapping(value="/changePassword/{emailId}")
-	public FabonUsers changeUserLoginPassword(@PathVariable String emailId) throws FabonUserExceptions {
+	@PostMapping(value="/changePasswordEmail")
+	public String sendPassswordChangeEmail(){
+		return "User clicked the link to change the password";		
+	}
+	
+	@PutMapping(value="/changePassword")
+	public FabonUsers changeUserLoginPassword(@RequestParam String emailId, @RequestParam String newPassword) throws FabonUserExceptions {
 		FabonUsers userDetail = fabonUserService.getUserByEmailId(emailId);
 		
 		if(null != userDetail) {
-			userDetail.setPassword(emailId);
-			userDetail.setConfirmPassword(emailId);
+			userDetail.setPassword(newPassword);
+			userDetail.setConfirmPassword(newPassword);
 			fabonUserService.saveSingleUserInDB(userDetail);
 			log.info("in FabonUserController layer - /user/changePassword - new password is saved to DB");
 			

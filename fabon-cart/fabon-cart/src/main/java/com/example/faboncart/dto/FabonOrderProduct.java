@@ -1,9 +1,15 @@
 package com.example.faboncart.dto;
 
+import java.io.Serializable;
+
 import org.springframework.stereotype.Component;
 
 @Component
-public class FabonOrderProduct {
+public class FabonOrderProduct  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String orderId;
 	private boolean orderPlaced;
 	private String productId;

@@ -1,5 +1,7 @@
 package com.example.faboncart.util;
 
+import java.math.BigInteger;
+import java.util.Random;
 import java.util.UUID;
 
 public class FabonCartUtil {
@@ -17,4 +19,14 @@ public class FabonCartUtil {
         System.out.println("Name-based UUID: " + nameBasedUUID);
 		return nameBasedUUID;
 	}
+	
+	public static BigInteger generateRandomFabonOrderId(int bitLength, Random random) {
+        BigInteger result;
+        do {
+            // Generate a random number with the specified bit length
+            result = new BigInteger(bitLength, random);
+            // Ensure the generated number is positive
+        } while (result.compareTo(BigInteger.ZERO) <= 0);
+        return result;
+    }
 }

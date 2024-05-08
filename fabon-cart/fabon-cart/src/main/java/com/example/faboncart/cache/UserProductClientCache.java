@@ -2,11 +2,8 @@ package com.example.faboncart.cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.example.faboncart.clients.UserProductClient;
 import com.example.faboncart.dto.FabonProduct;
 import com.example.faboncart.redis.dao.UserProductRedDao;
 
